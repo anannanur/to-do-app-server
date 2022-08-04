@@ -8,7 +8,7 @@ app.use(cors());
 app.use(express.json());
 const port = process.env.PORT || 5000;
 
-
+// connecting database
 const uri = "mongodb+srv://ananna:GLxy1oaAb2GafPdq@cluster0.va7ke.mongodb.net/?retryWrites=true&w=majority";
 const client = new MongoClient(uri, {
     useNewUrlParser: true,
@@ -16,14 +16,26 @@ const client = new MongoClient(uri, {
     serverApi: ServerApiVersion.v1
 });
 
+// working with rest api
 async function run() {
     try {
-      await client.connect();
+        await client.connect();
+        const taskCollection = client.db("ToDoApp").collection("tasks");
+
+        //   posting added tasks in db
+        app.post('/tasks',(req,res)=>{
+            const data = req.body;
+            const result = await taskCollection.insertOne(data);
+            res.send(result);
+        })
+
+
+
     } finally {
-      
+
     }
-  }
-  run().catch(console.dir);
+}
+run().catch(console.dir);
 
 
 // testing server 
