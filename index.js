@@ -2,7 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const app = express();
 require("dotenv").config();
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 
 app.use(cors());
 app.use(express.json());
@@ -23,10 +23,28 @@ async function run() {
         const taskCollection = client.db("ToDoApp").collection("tasks");
 
         //   posting added tasks in db
-        app.post('/tasks',(req,res)=>{
+        app.post('/tasks', async (req, res) => {
             const data = req.body;
             const result = await taskCollection.insertOne(data);
             res.send(result);
+        })
+
+        // getting task
+        app.get('/your-tasks', async (req, res) => {
+            const email = req.query.email;
+            const query = { email: email };
+            const cursor = taskCollection.find(query);
+            const result = await cursor.toArray();
+            res.send(result);
+        })
+
+        //getting single task to edit
+        app.get('/edit-task/:id', async(req,res) =>{
+            const {id} = req.params;
+            const query = { _id : ObjectId(id)};
+            const result = await taskCollection.findOne(query);
+            res.send(result);
+            
         })
 
 
