@@ -39,13 +39,34 @@ async function run() {
         })
 
         //getting single task to edit
-        app.get('/edit-task/:id', async(req,res) =>{
-            const {id} = req.params;
-            const query = { _id : ObjectId(id)};
+        app.get('/edit-task/:id', async (req, res) => {
+            const { id } = req.params;
+            const query = { _id: ObjectId(id) };
             const result = await taskCollection.findOne(query);
             res.send(result);
-            
+
         })
+        // editing a task
+        app.put("/edit-task/:email", async (req, res) => {
+            const email = req.params.email;
+
+            const user = req.body;
+
+            const query = { email: email };
+            const options = { upsert: true };
+            const info = {
+                $set: {
+                    email: user.email,
+                    name: user.name,
+                    des: user.des,
+                    time: user.time,
+                    date: user.date,
+                },
+            };
+            const result = await taskCollection.updateOne(query, info, options);
+
+            res.send(result);
+        });
 
 
 
