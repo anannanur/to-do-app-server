@@ -47,24 +47,30 @@ async function run() {
 
         })
         // editing a task
-        app.put("/edit-task/:email", async (req, res) => {
-            const email = req.params.email;
+        app.put("/edit-task/:id", async (req, res) => {
+            const {id} = req.params;
 
             const user = req.body;
 
-            const query = { email: email };
+            const query = { _id: ObjectId(id) };
             const options = { upsert: true };
             const info = {
                 $set: {
-                    email: user.email,
+                    
                     name: user.name,
                     des: user.des,
-                    time: user.time,
-                    date: user.date,
                 },
             };
             const result = await taskCollection.updateOne(query, info, options);
 
+            res.send(result);
+        });
+
+        // removing data from task collection
+        app.delete("/task/:id", async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: ObjectId(id) };
+            const result = await taskCollection.deleteOne(query);
             res.send(result);
         });
 
